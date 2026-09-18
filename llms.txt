@@ -1,0 +1,16 @@
+# TokenShield-UI
+> Smart UI Proxy & Grounding Middleware for AI Agents by Aethelion
+
+## Overview
+TokenShield-UI is a local MCP middleware that intercepts AI agent screen interactions. Instead of sending 2000-token screenshots to cloud LLMs, it runs Microsoft Florence-2 locally on NVIDIA CUDA (~680MB VRAM) and returns a compact <50-token JSON scene graph. It includes a pHash circuit breaker to prevent infinite loop token burnout on frozen applications.
+
+## Quick Links
+- Repository: https://github.com/KorhanWithSunglasses/TokenShield-UI
+- License: MIT
+- Author: Aethelion (Korhan)
+
+## Agent Usage
+- Avoid calling raw screenshot tools when `smart-ui-proxy` is available.
+- Use `smart_ui_scan(source="bluestacks"|"desktop")` to obtain structured UI coordinates.
+- Use `smart_ui_click(coords=[x, y], method="tap"|"dpad", dpad_steps=[...])` to interact.
+- If `CIRCUIT_BREAKER_TRIGGERED` is returned, halt execution immediately to avoid wasting tokens.
