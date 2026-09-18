@@ -7,7 +7,7 @@ TokenShield-UI is a local MCP middleware that intercepts AI agent screen interac
 ## Quick Links
 - Repository: https://github.com/aethelondev-stack/TokenShield-UI
 - License: MIT
-- Author: Aethelion (Korhan)
+- Author: Aethelion
 
 ## Agent Usage
 - Avoid calling raw screenshot tools when `smart-ui-proxy` is available.

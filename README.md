@@ -1,7 +1,7 @@
-# 🛡️ TokenShield-UI: Smart UI Proxy & Grounding Middleware
-### *By Aethelion (Korhan)*
+﻿# 🛡️ TokenShield-UI: Smart UI Proxy & Grounding Middleware
+### *By Aethelion*
 
-> **Otonom yapay zeka ajanlarının (AI Agents) işletim sistemini ve uygulamaları yönetirken ekran görüntüsüyle token'ları tüketmesini engelleyen, yerel GPU destekli akıllı filtre, D-Pad navigasyon motoru ve devre kesici (Circuit Breaker) katmanı.**
+> **A local GPU-accelerated UI grounding middleware, D-Pad navigation engine, and perceptual circuit breaker designed to prevent autonomous AI agents from burning excessive tokens on raw screen captures.**
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-TokenShield--UI-181717?logo=github)](https://github.com/aethelondev-stack/TokenShield-UI)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -13,99 +13,99 @@
 
 ---
 
-> ⚠️ **Bu Dökümantasyon Çift Modludur (Dual-Audience Documentation):**
-> * 👤 **Bölüm 1: Eğer bir İnsan Geliştirici okuyorsa** (Sistemin mantığı, token krizi çözümü, kurulum ve kullanım rehberi).
-> * 🤖 **Bölüm 2: Eğer bir Yapay Zeka / AI Ajanı okuyorsa** (Doğrudan ajan sistem promptu, MCP araç entegrasyonu, hata kurtarma ve karar protokolleri).
+> ⚠️ **This Documentation Features Dual-Audience Architecture:**
+> * 👤 **Section 1: If a Human Developer is reading** (System architecture, token crisis resolution, setup, and usage guide).
+> * 🤖 **Section 2: If an AI Agent / LLM is reading** (Operational system directives, Model Context Protocol integration, error recovery, and decision protocol).
 
 ---
 
-## 👤 BÖLÜM 1: EĞER BU BELGEYİ BİR İNSAN OKUYORSA
+## 👤 SECTION 1: IF A HUMAN IS READING THIS
 
-### 📌 Problem Nedir? Neden Bu Projeyi Yazdım?
-Son dönemde popülerleşen otonom yapay zeka ajanları (**OpenClaw, Anthropic Computer Use, Vision Ajanları vb.**), bilgisayarınızı veya emülatörünüzü yönetirken her tıklamada ekran görüntüsü alır.
+### 📌 The Problem: Why Did I Build This?
+Modern autonomous AI agents (**OpenClaw, Anthropic Computer Use, OSWorld, Vision-based GUI Agents**) capture full-screen screenshots at every single interaction step.
 
-Bu yaklaşım pratikte **iki büyük felakete** yol açar:
-1. **Aşırı Token Tüketimi (Token Bleeding):**  
-   1080p veya 4K tek bir ekran görüntüsü, LLM'e (GPT-4o, Claude vb.) gönderildiğinde **1.500 ile 2.500 token** harcar. Basit bir 40 adımlık form doldurma veya menü testi, dakikalar içinde **100.000+ token** yakarak cüzdanınızı boşaltır.
-2. **Kilitlenme ve Sonsuz Döngü Tuzağı (Loop Trap):**  
-   Uygulama çöktüğünde veya buton tepki vermediğinde ajan bunu görsel olarak fark edemez; inatla aynı butona tekrar tekrar tıklar ve siz farkına varana kadar arkada yüzlerce dolar harcar.
+In real-world deployment, this creates **two severe bottlenecks**:
+1. **Severe Token Bleeding:**  
+   Sending a single 1080p or 4K frame to cloud multimodal models (GPT-4o, Claude 3.5 Sonnet, etc.) consumes **1,500 to 2,500 tokens per action**. A routine 40-step form submission or navigation task easily burns **100,000+ tokens within minutes**, quickly exhausting API budgets.
+2. **The Infinite Loop Trap (Freeze Blindness):**  
+   When an application crashes, freezes, or encounters an unclickable button, vision agents often fail to detect the lack of state progression. They repeatedly capture identical screens and hammer the same coordinates, burning hundreds of dollars in loops before human intervention.
 
-### 💡 TokenShield-UI Nasıl Çözüyor?
-* **Gözler Bilgisayarınızda (Yerel GPU):** Ekran resimleri bulut LLM'e **ASLA** gitmez. Bilgisayarınızdaki yerel model (**Microsoft Florence-2-base**, sadece ~680 MB VRAM) ekranı saniyenin onda birinde tarar.
-* **Ajana Sadece Metin Gider:** LLM'in önüne devasa bir resim yerine, sadece tıklanabilir öğeleri ve odak bilgisini içeren küçücük bir JSON haritası sunulur (**~45 token**).
-* **pHash Devre Kesici (Circuit Breaker):** Sistem ekranın dijital parmak izini (*Perceptual Hash*) takip eder. Üst üste 3 işlem boyunca ekranda değişiklik olmazsa sistemi kilitler ve ajanın token yakmasını durdurur.
-* **Android TV / TvBox & BlueStacks Desteği:** Mavi/Cyan kumanda odak çerçevelerini tespit eder ve otomatik kumanda tuşları (`DPAD_UP`, `DPAD_RIGHT`, `DPAD_CENTER`) üretir.
-* **Arka Planda Sessiz Çalışma:** BlueStacks arkadayken veya simge durumundayken farenizi oynatmadan, pencerelerinizi kapatmadan çalışır.
+### 💡 How TokenShield-UI Solves This
+* **Local Eyes on Your Hardware (Local GPU):** Screenshots **NEVER** leave your machine. A lightweight local vision model (**Microsoft Florence-2-base**, occupying only **~680 MB VRAM** on an NVIDIA RTX GPU) parses screen elements in under 100 milliseconds.
+* **Text-Only Delivery to Agents:** Instead of raw image payloads, the agent receives a compact, structured JSON scene graph containing only actionable elements and focus coordinates (**~45 tokens**).
+* **pHash Circuit Breaker:** Calculates the perceptual hash (*pHash*) of the target window. If 3 consecutive actions produce identical perceptual signatures, the circuit breaker trips, halting execution and preventing token burnout.
+* **Android TV / TvBox & BlueStacks Native Support:** Detects Cyan/Blue remote focus outlines and generates direct D-Pad navigation sequences (DPAD_UP, DPAD_RIGHT, DPAD_CENTER).
+* **Silent Background Execution:** Interacts with BlueStacks and ADB targets in the background without stealing mouse focus or minimizing active user windows.
 
-### 📊 Token & Maliyet Karşılaştırması
+### 📊 Token & Cost Efficiency Comparison
 
-| Kriter | Klasik Vision Ajanları (OpenClaw vb.) | TokenShield-UI (Aethelion) |
+| Metric | Traditional Vision Agents (OpenClaw, etc.) | TokenShield-UI (Aethelion) |
 | :--- | :--- | :--- |
-| **Görsel İşleme Yeri** | Bulut LLM (Ücretli API) | **Yerel Ekran Kartı (RTX / CUDA / CPU - Ücretsiz)** |
-| **Tıklama Başına Token** | ~1.800 - 2.500 Token | **~40 - 60 Token (JSON)** |
-| **50 Adımlık Test Maliyeti** | ~100.000 Token (~1.20$) | **~2.500 Token (~0.02$)** |
-| **Tasarruf Oranı** | - | **%97.5 AZALMA 🎯** |
-| **Donma / Loop Koruması** | Yok (Sonsuz döngüye girer) | **Var (pHash Circuit Breaker 3. adımda durdurur)** |
+| **Vision Inference** | Cloud LLM (Paid API) | **Local GPU (RTX / CUDA - 100% Free)** |
+| **Tokens per Action** | ~1,800 - 2,500 Tokens | **~40 - 60 Tokens (Structured JSON)** |
+| **50-Step Task Cost** | ~100,000 Tokens (~.20) | **~2,500 Tokens (~.02)** |
+| **Token Reduction** | - | **~97.5% SAVINGS 🎯** |
+| **Freeze / Loop Protection** | None (Loops indefinitely) | **Hardware-Level (pHash halts at 3 consecutive identical states)** |
 
 ---
 
-### 🚀 İnsan Geliştirici İçin Kurulum & Kullanım
+### 🚀 Human Developer Quickstart
 
-#### 1. Depoyu Klonlayın ve Bağımlılıkları Yükleyin
-```bash
+#### 1. Clone the Repository & Install Dependencies
+`ash
 git clone https://github.com/aethelondev-stack/TokenShield-UI.git
 cd TokenShield-UI
 
-# Bağımlılıkları yükleyin (CUDA destekli PyTorch önerilir)
+# Install dependencies (PyTorch with CUDA recommended)
 pip install -r requirements.txt
-```
+`
 
-#### 2. Tek Tıkla Aç/Kapat (Toggle Switch)
-Sistemi dilediğiniz an tek tıkla devre dışı bırakmak veya tekrar açmak için:
-* Depo içindeki **`toggle_shield.bat`** dosyasına çift tıklayın. Anında açılır/kapanır.
+#### 2. One-Click Toggle Switch (Gaming & Privacy Mode)
+Need to play games or reclaim VRAM instantly?
+* Double-click **	oggle_shield.bat** in the project directory to toggle the middleware on/off.
 
-#### 3. MCP Olarak Ekleyin (Cursor, Antigravity, Claude Desktop, Windsurf)
-Kullandığınız aracın MCP konfigürasyon dosyasına (`mcp_config.json` veya `claude_desktop_config.json`) şu bloğu ekleyin:
+#### 3. Connect via MCP (Cursor, Antigravity, Claude Desktop, Windsurf)
+Add the server definition to your tool's MCP configuration file (mcp_config.json or claude_desktop_config.json):
 
-```json
+`json
 {
   "mcpServers": {
     "smart-ui-proxy": {
       "command": "python",
       "args": [
-        "C:\\TAM_YOL\\TokenShield-UI\\server.py"
+        "C:\\PATH_TO\\TokenShield-UI\\server.py"
       ],
       "env": {}
     }
   }
 }
-```
+`
 
 ---
 
-## 🤖 BÖLÜM 2: EĞER BU BELGEYİ BİR YAPAY ZEKA / AI AJANI OKUYORSA
-*(FOR AUTONOMOUS AI AGENTS, CURSOR AGENT, ANTIGRAVITY, CLAUDE DESKTOP)*
+## 🤖 SECTION 2: IF AN AI AGENT IS READING THIS
+*(FOR AUTONOMOUS AI AGENTS, CURSOR AGENT, ANTIGRAVITY, CLAUDE DESKTOP, WINDSURF)*
 
-```yaml
+`yaml
 agent_instruction_type: system_guidelines
 target_agent: LLM / Autonomous Agent / Coding Assistant
 middleware_name: TokenShield-UI
 protocol: Model Context Protocol (MCP)
 primary_objective: Zero-token-waste GUI perception, background execution, loop prevention
-```
+`
 
-### 🎯 Ajan Karar Protokolü (Operational Directives)
+### 🎯 Operational Directives
 
-Eğer kullanıcı senden işletim sisteminde (Windows Masaüstü) veya bir Android emülatöründe (BlueStacks / TvBox) bir işlem yapmanı istediyse, **AŞAĞIDAKİ PROTOKOLÜ HARFİYEN UYGULA:**
+When instructed to interact with the host operating system (Windows Desktop) or an Android emulator / device (BlueStacks, Android TV):
 
-#### 1. ASLA Ham Ekran Görüntüsü ÇAĞIRMA:
-* `screenshot` veya `take_screenshot` araçlarını çağırma. 
-* Bu araçlar bağlamını 2.000+ tokenlik görsellerle doldurur ve kullanıcının API kredisini tüketir.
-* Bunun yerine her zaman **`smart_ui_scan`** aracını çağır.
+#### 1. DO NOT Request Raw Screenshots:
+* Do not call screenshot or 	ake_screenshot tools.
+* These tools clutter your context window with 2,000+ token images and deplete user API credits.
+* Always query **smart_ui_scan** instead.
 
-#### 2. Ekran Taramasını Yorumlama (`smart_ui_scan`):
-* `smart_ui_scan(source="bluestacks"|"desktop")` çağırdığında sana şu formatta temiz bir JSON dönecektir:
-  ```json
+#### 2. Parse Structured Screen Grounding (smart_ui_scan):
+* Calling smart_ui_scan(source="bluestacks"|"desktop") returns structured coordinates:
+  `json
   {
     "screen_dimensions": [1920, 1080],
     "active_focus": {
@@ -118,48 +118,48 @@ Eğer kullanıcı senden işletim sisteminde (Windows Masaüstü) veya bir Andro
       {"box": [790, 98, 1013, 368], "center": [901, 233]}
     ]
   }
-  ```
-* Bu JSON üzerindeki koordinatları doğrudan aksiyonlarında kullan.
+  `
+* Consume these target centers directly in your decision pipeline.
 
-#### 3. Aksiyon Alma Protokolü (`smart_ui_click`):
-* **TvBox / Android TV Odaklı Gezinme:** Eğer `active_focus` alanı doluysa, hedef karta gitmek için `method="dpad"` ve hesaplanan `dpad_steps` (örn: `["DPAD_UP", "DPAD_RIGHT", "DPAD_CENTER"]`) parametrelerini gönder.
-* **Doğrudan Tıklama:** Masaüstü veya dokunmatik arayüzlerde `method="tap"` ve `coords=[x, y]` gönder.
+#### 3. Action Protocol (smart_ui_click):
+* **D-Pad / TV Navigation:** When ctive_focus is present, navigate by setting method="dpad" with calculated dpad_steps (e.g., ["DPAD_UP", "DPAD_RIGHT", "DPAD_CENTER"]).
+* **Direct Pointer Interaction:** For touch or mouse targets, supply method="tap" and coords=[x, y].
 
-#### 4. Kilitlenme ve Hata Yönetimi (`CIRCUIT_BREAKER`):
-* Eğer araç sana şu yanıtı dönerse:
-  ```json
-  {"status": "CIRCUIT_BREAKER_TRIGGERED", "error": "Ekran son 3 aksiyondur degismedi..."}
-  ```
-  * **ASLA aynı butona tekrar tıklamayı deneme!**
-  * Döngüyü derhal durdur.
-  * Kullanıcıya ekranın donduğunu veya uygulamanın yanıt vermediğini raporla.
-  * Kullanıcı onay verdikten sonra `smart_ui_reset()` aracını çağırarak kilidi kaldır.
+#### 4. Circuit Breaker Protocol (CIRCUIT_BREAKER):
+* If the tool responds with:
+  `json
+  {"status": "CIRCUIT_BREAKER_TRIGGERED", "error": "Screen state remained identical across 3 consecutive actions..."}
+  `
+  * **DO NOT attempt clicking the same target again.**
+  * Halt your loop immediately.
+  * Inform the user that the target application appears frozen or unresponsive.
+  * Await user confirmation before invoking smart_ui_reset().
 
-#### 5. Masaüstü Kısayollarına Doğrudan Erişim (`smart_ui_desktop_items`):
-* Kullanıcı masaüstündeki bir programı açmanı istediğinde ekrandaki pencereleri küçültme.
-* Doğrudan `smart_ui_desktop_items(launch="Uygulama Adi")` aracını çağır. Bu, farenin kontrolünü çalmadan uygulamayı arka planda ayağa kaldırır.
+#### 5. Background Application Launching (smart_ui_desktop_items):
+* When requested to open an application from the desktop, avoid minimizing foreground work.
+* Query smart_ui_desktop_items(launch="App Name") to launch programs directly via system handlers without displacing active windows.
 
 ---
 
-## 📁 Proje Dizin Yapısı
+## 📁 Repository Structure
 
-```
+`
 TokenShield-UI/
-├── engine.py              # Çekirdek görsel motor (Florence-2, OpenCV, Cyan Odak)
-├── fallback_handler.py    # Donma koruması, pHash parmak izi ve Circuit Breaker
-├── agent_ui_tool.py       # Terminalden çalıştırma ve benchmark CLI aracı
-├── server.py              # FastMCP JSON-RPC sunucusu
-├── toggle_shield.py       # Tek tıkla aç/kapat motoru
-├── toggle_shield.bat      # Windows çift tıkla aç/kapat başlatıcısı
-├── requirements.txt       # Python paket bağımlılıkları
-├── .gitignore             # Git yoksayma kuralları
-├── LICENSE                # MIT Lisansı
-└── README.md              # Çift modlu detaylı dökümantasyon
-```
+├── engine.py              # Core perception engine (Florence-2, OpenCV, Cyan focus tracker)
+├── fallback_handler.py    # Perceptual hash tracker, fallback UI parser & Circuit Breaker
+├── agent_ui_tool.py       # CLI benchmarking & testing harness
+├── server.py              # FastMCP JSON-RPC server endpoint
+├── toggle_shield.py       # Programmatic on/off configuration switch
+├── toggle_shield.bat      # Windows one-click toggle launcher
+├── requirements.txt       # Python package dependencies
+├── .gitignore             # Git ignore specification
+├── LICENSE                # MIT License
+└── README.md              # Dual-audience technical documentation
+`
 
 ---
 
-## 📄 Lisans & Yazar
+## 📄 License & Attribution
 
-* **Yazar:** Aethelion (Korhan)
-* **Lisans:** Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır. Dilediğiniz gibi ticari veya kişisel projelerinizde kullanabilir, geliştirebilir ve paylaşabilirsiniz.
+* **Author:** Aethelion
+* **License:** Licensed under the [MIT License](LICENSE). You are free to use, modify, distribute, and integrate this software in commercial and private projects.
