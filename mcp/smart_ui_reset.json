@@ -1,0 +1,1 @@
+{"name":"smart_ui_reset","description":"\nResets the circuit breaker and screen state history.\n","parameters":{"properties":{},"title":"smart_ui_resetArguments","type":"object"}}

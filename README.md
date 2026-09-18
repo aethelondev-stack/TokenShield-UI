@@ -159,11 +159,19 @@ When instructed to interact with the host operating system (Windows Desktop) or 
 TokenShield-UI/
 ├── engine.py              # Core perception engine (Florence-2, OpenCV, Cyan focus tracker)
 ├── fallback_handler.py    # Perceptual hash tracker, fallback UI parser & Circuit Breaker
+├── server.py              # FastMCP JSON-RPC server endpoint (smart_ui_scan, click, reset)
 ├── agent_ui_tool.py       # CLI benchmarking & testing harness
-├── server.py              # FastMCP JSON-RPC server endpoint
 ├── toggle_shield.py       # Programmatic on/off configuration switch
 ├── toggle_shield.bat      # Windows one-click toggle launcher
+├── mcp/                   # MCP schemas, directives, and configuration templates
+│   ├── instructions.md
+│   ├── mcp_config.example.json
+│   ├── smart_ui_scan.json
+│   ├── smart_ui_click.json
+│   ├── smart_ui_desktop_items.json
+│   └── smart_ui_reset.json
 ├── requirements.txt       # Python package dependencies
+├── llms.txt               # Machine-readable context for AI agents
 ├── .gitignore             # Git ignore specification
 ├── LICENSE                # MIT License
 └── README.md              # Dual-audience technical documentation

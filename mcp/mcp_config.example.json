@@ -1,0 +1,11 @@
+﻿{
+  "mcpServers": {
+    "smart-ui-proxy": {
+      "command": "python",
+      "args": [
+        "/path/to/TokenShield-UI/server.py"
+      ],
+      "env": {}
+    }
+  }
+}

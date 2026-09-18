@@ -1,0 +1,16 @@
+﻿{
+  "name": "smart_ui_desktop_items",
+  "description": "Reads all desktop files and shortcuts directly from Windows Shell WITHOUT taking a screenshot. Can also launch any desktop app directly. 100% headless, 0 tokens wasted.",
+  "parameters": {
+    "properties": {
+      "launch": {
+        "default": null,
+        "description": "Optional app/file name to launch directly from desktop without moving mouse (e.g. 'Neon Clicker')",
+        "title": "Launch",
+        "type": "string"
+      }
+    },
+    "title": "smart_ui_desktop_itemsArguments",
+    "type": "object"
+  }
+}
