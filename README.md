@@ -3,7 +3,7 @@
 
 > **Otonom yapay zeka ajanlarının (AI Agents) işletim sistemini ve uygulamaları yönetirken ekran görüntüsüyle token'ları tüketmesini engelleyen, yerel GPU destekli akıllı filtre, D-Pad navigasyon motoru ve devre kesici (Circuit Breaker) katmanı.**
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-TokenShield--UI-181717?logo=github)](https://github.com/KorhanWithSunglasses/TokenShield-UI)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-TokenShield--UI-181717?logo=github)](https://github.com/aethelondev-stack/TokenShield-UI)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-CUDA%20Ready-red.svg)](https://pytorch.org/)
@@ -53,7 +53,7 @@ Bu yaklaşım pratikte **iki büyük felakete** yol açar:
 
 #### 1. Depoyu Klonlayın ve Bağımlılıkları Yükleyin
 ```bash
-git clone https://github.com/KorhanWithSunglasses/TokenShield-UI.git
+git clone https://github.com/aethelondev-stack/TokenShield-UI.git
 cd TokenShield-UI
 
 # Bağımlılıkları yükleyin (CUDA destekli PyTorch önerilir)

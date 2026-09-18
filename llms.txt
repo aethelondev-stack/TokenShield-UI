@@ -5,7 +5,7 @@
 TokenShield-UI is a local MCP middleware that intercepts AI agent screen interactions. Instead of sending 2000-token screenshots to cloud LLMs, it runs Microsoft Florence-2 locally on NVIDIA CUDA (~680MB VRAM) and returns a compact <50-token JSON scene graph. It includes a pHash circuit breaker to prevent infinite loop token burnout on frozen applications.
 
 ## Quick Links
-- Repository: https://github.com/KorhanWithSunglasses/TokenShield-UI
+- Repository: https://github.com/aethelondev-stack/TokenShield-UI
 - License: MIT
 - Author: Aethelion (Korhan)
 
