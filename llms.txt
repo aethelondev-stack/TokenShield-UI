@@ -15,4 +15,5 @@ TokenShield-UI is a local MCP middleware that intercepts AI agent screen interac
 - Use `smart_ui_click(coords=[x, y], method="tap"|"dpad", dpad_steps=[...])` to interact.
 - If `CIRCUIT_BREAKER_TRIGGERED` is returned, halt execution immediately to avoid wasting tokens.
 - Use `smart_ui_desktop_items(launch="...")` or `smart_ui_scan(source="desktop")` to find files and launch shortcuts without minimizing windows or stealing mouse focus.
+- SOURCE DISAMBIGUATION: When user asks about their PC screen or desktop, ALWAYS use `source="desktop"`. NEVER substitute BlueStacks/ADB when user asks about their PC.
 - Strict Recovery Protocol: Limit retries to 2 attempts max. If circuit breaker trips or grounding fails, halt immediately with `BLOCKED: LOCAL_GROUNDING_FAILED`. Do not loop `smart_ui_reset()`.

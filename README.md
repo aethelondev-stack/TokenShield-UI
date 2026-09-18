@@ -91,6 +91,10 @@ Add the server definition to your tool's MCP configuration file (mcp_config.json
 }
 `
 
+#### 4. 🛠️ Common Windows Pitfall: Session Isolation & "Screen Grab Failed"
+* **The Trap:** Autonomous AI environments (Antigravity sub-shells, Cursor background terminals) often execute tools in an isolated Windows virtual desktop station (e.g. `exebox-...`). Standard tools calling `pyautogui.screenshot()` or PIL `ImageGrab.grab()` crash with `OSError: screen grab failed`. When this happens, naive agents panic, discover an active ADB port (like BlueStacks) in the background, and mistakenly report the emulator's screen instead of your actual PC desktop!
+* **The TokenShield-UI Solution:** `engine.py` implements native Win32 desktop station switching (`user32.OpenDesktopW("Default")` -> `SetThreadDesktop`). It seamlessly bridges the background thread to your real interactive desktop before capturing, permanently resolving `screen grab failed` errors and ensuring that your actual PC screen is inspected.
+
 ---
 
 ## 🤖 SECTION 2: IF AN AI AGENT IS READING THIS
@@ -107,6 +111,11 @@ primary_objective: Zero-token-waste GUI perception, background execution, loop p
 ### 🎯 Operational Directives
 
 When instructed to interact with the host operating system (Windows Desktop) or an Android emulator / device (BlueStacks, Android TV):
+
+#### ⚠️ CRITICAL PITFALL: SOURCE DISAMBIGUATION & THE ADB TRAP
+* **Never Substitute ADB for PC:** When the user asks about their PC screen (*"bilgisayarım", "ekranım", "desktop", "my computer", "PC"*), ALWAYS pass `source="desktop"`. 
+* **The Emulation Trap:** If an Android emulator (BlueStacks) or physical device (Android TV / ADB) is connected in the background, **NEVER** present the emulator's screen when the user asked about their PC!
+* **Zero Guessing:** If desktop capture ever encounters an OS permission issue, do NOT secretly fall back to ADB. Halt and report `BLOCKED: LOCAL_GROUNDING_FAILED` to the user instead of hallucinating.
 
 #### 1. DO NOT Request Raw Screenshots:
 * Do not call screenshot or 	ake_screenshot tools.
