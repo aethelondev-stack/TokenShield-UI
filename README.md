@@ -1,4 +1,4 @@
-﻿# 🛡️ TokenShield-UI: Smart UI Proxy & Grounding Middleware
+# 🛡️ TokenShield-UI: Smart UI Proxy & Grounding Middleware
 ### *By Aethelion*
 
 > **A local GPU-accelerated UI grounding middleware, D-Pad navigation engine, and perceptual circuit breaker designed to prevent autonomous AI agents from burning excessive tokens on raw screen captures.**
@@ -33,8 +33,18 @@ In real-world deployment, this creates **two severe bottlenecks**:
 ### 💡 How TokenShield-UI Solves This
 * **Local Eyes on Your Hardware (Local GPU):** Screenshots **NEVER** leave your machine. A lightweight local vision model (**Microsoft Florence-2-base**, occupying only **~680 MB VRAM** on an NVIDIA RTX GPU) parses screen elements in under 100 milliseconds.
 * **Text-Only Delivery to Agents:** Instead of raw image payloads, the agent receives a compact, structured JSON scene graph containing only actionable elements and focus coordinates (**~45 tokens**).
+* **Desktop & File Explorer Grounding (Zero Mouse Hijacking & Zero Window Disruption):**
+  * **Clicking Desktop Elements:** When an agent needs to click an icon or launch a program from your desktop, traditional tools blindly minimize all your open windows (`Win + D`), interrupting your active workflow and throwing your mouse cursor wildly across the screen. TokenShield-UI uses a combination of virtual desktop peeking and Windows Shell API enumeration (`smart_ui_desktop_items`) to discover shortcuts, app names, and exact screen bounds directly in the background—launching or interacting with them without stealing your mouse focus.
+  * **Searching & Locating Documents Inside Folders:** When navigating inside File Explorer or folder directories to find a specific document, Florence-2 uses local dense phrase grounding. Rather than uploading heavy 4K screenshots of your folder view to expensive cloud LLMs, the local model parses filenames, search bars, navigation breadcrumbs, and document icons into clean coordinate bounding boxes. The agent receives a concise, structured answer:
+    ```json
+    {
+      "search_bar": {"center": [1240, 75], "type": "input_field"},
+      "target_file": {"label": "financial_report.xlsx", "center": [412, 380], "type": "file_item"}
+    }
+    ```
+    The agent can immediately double-click the document or type into the search bar using **~35 tokens**, without a single pixel leaving your machine.
 * **pHash Circuit Breaker:** Calculates the perceptual hash (*pHash*) of the target window. If 3 consecutive actions produce identical perceptual signatures, the circuit breaker trips, halting execution and preventing token burnout.
-* **Android TV / TvBox & BlueStacks Native Support:** Detects Cyan/Blue remote focus outlines and generates direct D-Pad navigation sequences (DPAD_UP, DPAD_RIGHT, DPAD_CENTER).
+* **Android TV / TvBox & BlueStacks Native Support:** Detects Cyan/Blue remote focus outlines and generates direct D-Pad navigation sequences (`DPAD_UP`, `DPAD_RIGHT`, `DPAD_CENTER`).
 * **Silent Background Execution:** Interacts with BlueStacks and ADB targets in the background without stealing mouse focus or minimizing active user windows.
 
 ### 📊 Token & Cost Efficiency Comparison
@@ -135,9 +145,11 @@ When instructed to interact with the host operating system (Windows Desktop) or 
   * Inform the user that the target application appears frozen or unresponsive.
   * Await user confirmation before invoking smart_ui_reset().
 
-#### 5. Background Application Launching (smart_ui_desktop_items):
-* When requested to open an application from the desktop, avoid minimizing foreground work.
-* Query smart_ui_desktop_items(launch="App Name") to launch programs directly via system handlers without displacing active windows.
+#### 5. Desktop & File Explorer Navigation Protocol (`smart_ui_desktop_items` & Local Grounding):
+* When requested to open an application or locate a document on the Desktop or inside a folder:
+  * **Zero Window Minimizing:** Avoid blindly triggering `Win + D` or minimizing the user's active work windows.
+  * **Direct Application Launching:** Query `smart_ui_desktop_items(launch="App Name")` to launch desktop programs directly via background system handlers without moving the mouse pointer.
+  * **Document & Folder Search:** When File Explorer or directory windows are active, call `smart_ui_scan(source="desktop")` to receive localized coordinates for search inputs, folder items, and filenames. Use the returned `center` coordinates with `smart_ui_click(coords=[x, y])` to interact directly.
 
 ---
 

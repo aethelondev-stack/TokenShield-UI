@@ -14,3 +14,4 @@ TokenShield-UI is a local MCP middleware that intercepts AI agent screen interac
 - Use `smart_ui_scan(source="bluestacks"|"desktop")` to obtain structured UI coordinates.
 - Use `smart_ui_click(coords=[x, y], method="tap"|"dpad", dpad_steps=[...])` to interact.
 - If `CIRCUIT_BREAKER_TRIGGERED` is returned, halt execution immediately to avoid wasting tokens.
+- Use `smart_ui_desktop_items(launch="...")` or `smart_ui_scan(source="desktop")` to find files and launch shortcuts without minimizing windows or stealing mouse focus.
