@@ -22,7 +22,7 @@
 ## 👤 SECTION 1: IF A HUMAN IS READING THIS
 
 ### 📌 The Problem: Why Did I Build This?
-Modern autonomous AI agents (**OpenClaw, Anthropic Computer Use, OSWorld, Vision-based GUI Agents**) capture full-screen screenshots at every single interaction step.
+Virtually **all standard autonomous AI agents and computer-use tools** (including Anthropic Computer Use, GPT-4o Vision agents, OSWorld, OpenClaw, and desktop automation assistants) rely on capturing and streaming full raw screenshots directly into the LLM context at every single interaction step.
 
 In real-world deployment, this creates **two severe bottlenecks**:
 1. **Severe Token Bleeding:**  
@@ -49,13 +49,13 @@ In real-world deployment, this creates **two severe bottlenecks**:
 
 ### 📊 Token & Cost Efficiency Comparison
 
-| Metric | Traditional Vision Agents (OpenClaw, etc.) | TokenShield-UI (Aethelion) |
+| Metric | All Standard AI Screen Agents (Raw Screen Captures to LLM) | TokenShield-UI Grounding Layer (Aethelion) |
 | :--- | :--- | :--- |
-| **Vision Inference** | Cloud LLM (Paid API) | **Local GPU (RTX / CUDA - 100% Free)** |
+| **Vision Inference** | Cloud Multimodal LLM (Paid API) | **Local GPU (RTX / CUDA - 100% Free)** |
 | **Tokens per Action** | ~1,800 - 2,500 Tokens | **~40 - 60 Tokens (Structured JSON)** |
-| **50-Step Task Cost** | ~100,000 Tokens (~.20) | **~2,500 Tokens (~.02)** |
-| **Token Reduction** | - | **~97.5% SAVINGS 🎯** |
-| **Freeze / Loop Protection** | None (Loops indefinitely) | **Hardware-Level (pHash halts at 3 consecutive identical states)** |
+| **50-Step Task Cost** | ~100,000 Tokens (~$1.20) | **~2,500 Tokens (~$0.02)** |
+| **Token Reduction** | Baseline (0%) | **~97.5% REDUCTION ACROSS ALL AGENTS 🎯** |
+| **Freeze / Loop Protection** | None (Blind loop token burn) | **Active (pHash halts at 3 consecutive identical states)** |
 
 ---
 
