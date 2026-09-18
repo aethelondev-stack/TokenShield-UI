@@ -17,8 +17,8 @@ engine = UIEngine()
 @mcp.tool()
 def smart_ui_scan(
     source: str = Field(
-        default="bluestacks",
-        description="Capture source: 'bluestacks' (ADB screencap) or 'desktop' (Windows screen grab)"
+        default="desktop",
+        description="Capture source: 'desktop' (Windows PC screen, active windows, desktop buttons) or 'bluestacks' (Android emulator / TvBox)"
     ),
     peek_desktop: bool = Field(
         default=False,
@@ -39,7 +39,7 @@ def smart_ui_scan(
                 "error": msg,
                 "token_estimate": 25
             }
-        result = engine.scan_screen(img)
+        result = engine.scan_screen(img, source=source)
         return result
     except Exception as e:
         return {"status": "error", "message": str(e)}

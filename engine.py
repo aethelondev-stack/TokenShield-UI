@@ -108,12 +108,61 @@ class UIEngine:
             return True, f"Launched: {matches[0]['name']}"
         return False, f"Desktop item '{item_name}' not found."
 
+    @staticmethod
+    def switch_to_user_desktop():
+        """Switches current thread to the interactive Windows 'Default' desktop station."""
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            hdesk = user32.OpenDesktopW("Default", 0, False, 0x01FF)
+            if hdesk:
+                user32.SetThreadDesktop(hdesk)
+                return True
+        except Exception:
+            pass
+        return False
+
+    def get_visible_desktop_windows(self):
+        """Enumerates visible application windows on the user's interactive desktop."""
+        self.switch_to_user_desktop()
+        import ctypes
+        user32 = ctypes.windll.user32
+        windows = []
+
+        def enum_cb(hwnd, lparam):
+            if user32.IsWindowVisible(hwnd):
+                buf = ctypes.create_unicode_buffer(256)
+                user32.GetWindowTextW(hwnd, buf, 256)
+                title = buf.value
+                if title and title not in ['Program Manager', 'Default IME', 'MSCTFIME UI']:
+                    rect = (ctypes.c_long * 4)()
+                    user32.GetWindowRect(hwnd, ctypes.byref(rect))
+                    w = rect[2] - rect[0]
+                    h = rect[3] - rect[1]
+                    if w > 50 and h > 50:
+                        windows.append({
+                            "title": title,
+                            "bounds": [rect[0], rect[1], rect[2], rect[3]],
+                            "center": [(rect[0] + rect[2]) // 2, (rect[1] + rect[3]) // 2]
+                        })
+            return True
+
+        WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+        try:
+            hdesk = user32.OpenDesktopW("Default", 0, False, 0x01FF)
+            if hdesk:
+                user32.EnumDesktopWindows(hdesk, WNDENUMPROC(enum_cb), 0)
+        except Exception:
+            pass
+        return windows
+
     def peek_desktop(self, restore_after=True):
         """
         Smoothly minimizes all windows (Win+D) to capture the desktop image,
         then optionally restores windows immediately so user workflow is uninterrupted.
         """
         import time
+        self.switch_to_user_desktop()
         if not pyautogui:
             return self.capture(source="desktop")
 
@@ -147,11 +196,17 @@ class UIEngine:
                 print(f"ADB capture failed: {e}. Falling back to desktop grab.")
 
         # Desktop capture
+        self.switch_to_user_desktop()
         if peek_desktop:
             return self.peek_desktop(restore_after=True)
 
         if pyautogui:
-            return pyautogui.screenshot().convert('RGB')
+            try:
+                return pyautogui.screenshot().convert('RGB')
+            except Exception as e:
+                print(f"pyautogui capture failed ({e}), retrying with desktop switch...")
+                self.switch_to_user_desktop()
+                return pyautogui.screenshot().convert('RGB')
         raise RuntimeError("No capture method available!")
 
     def detect_cyan_focus(self, image_pil):
@@ -253,11 +308,36 @@ class UIEngine:
         steps.append("DPAD_CENTER")
         return steps
 
-    def scan_screen(self, image_pil):
+    def scan_screen(self, image_pil, source="desktop"):
         """
-        Full Scene Decomposition into minimal structured JSON.
+        Full Scene Decomposition into minimal structured JSON for either
+        Windows Desktop or Android BlueStacks / TvBox.
         """
         width, height = image_pil.size
+
+        if source == "desktop":
+            windows = self.get_visible_desktop_windows()
+            active_title = ""
+            try:
+                import ctypes
+                user32 = ctypes.windll.user32
+                hwnd = user32.GetForegroundWindow()
+                buf = ctypes.create_unicode_buffer(256)
+                user32.GetWindowTextW(hwnd, buf, 256)
+                active_title = buf.value
+            except Exception:
+                pass
+
+            return {
+                "source": "desktop",
+                "screen_dimensions": [width, height],
+                "active_foreground_window": active_title,
+                "visible_windows_count": len(windows),
+                "visible_windows": windows[:12],
+                "token_estimate": 45
+            }
+
+        # BlueStacks / Android TV
         focus_box = self.detect_cyan_focus(image_pil)
         cards = self.detect_card_grid(image_pil)
 
@@ -272,6 +352,7 @@ class UIEngine:
             }
 
         response = {
+            "source": "bluestacks",
             "screen_dimensions": [width, height],
             "active_focus": active_focus,
             "detected_cards_count": len(cards),

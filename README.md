@@ -167,6 +167,7 @@ When observing or interacting with the host operating system (Windows Desktop), 
 
 - NEVER capture raw full-screen screenshots or load raw display images into multimodal LLM context (via `view_file`, `screenshot`, or `adb screencap`).
 - ALWAYS query the local `smart-ui-proxy` MCP server (`smart_ui_scan`, `smart_ui_click`, `smart_ui_desktop_items`) to receive compact, structured JSON scene graphs.
+- SOURCE DISAMBIGUATION: When the user refers to their PC, computer screen, desktop, or Windows ('bilgisayarım / ekranım / masaüstüm'), pass `source="desktop"` to `smart_ui_scan`. NEVER substitute BlueStacks or ADB when the user asks about their PC screen. When the user refers to BlueStacks, Android, TvBox, or mobile games, pass `source="bluestacks"`.
 - If `CIRCUIT_BREAKER_TRIGGERED` is returned, halt actions immediately to prevent token burnout on frozen or unresponsive interfaces.
 
 ### RECOVERY & LOOP-PREVENTION PROTOCOL:
